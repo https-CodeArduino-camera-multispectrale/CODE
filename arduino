@@ -1,0 +1,343 @@
+#include <SPI.h>
+#include <SD.h>
+File myFile;
+const int btnPin = 13;
+const int led1Pin = A5;
+const int led2Pin = 2;
+const int led3Pin = 3;
+const int led4Pin = 4;
+const int led5Pin = 5;
+const int led6Pin = 6;
+const int led7Pin = 7;
+const int led8Pin = 8;
+const int led9Pin = 9;
+const int led10Pin = A0;
+
+enum fcnMode {
+  //OFF,
+  LED1,
+  LED2,
+  LED3,
+  LED4,
+  LED5,
+  LED6,
+  LED7,
+  LED8,
+  LED9,
+  LED10,
+};
+int ledState1 = LOW, ledState2 = LOW, ledState3 = LOW, ledState4 = LOW, ledState5 = LOW, ledState6 = LOW, ledState7 = LOW;
+int funcState = 0;
+float U1, U2, U3, U4, U5, U6, U7, U8, U9, U10;
+float valeurA0;
+
+void setup()
+{
+  Serial.begin(9600);
+  Serial.println();
+  analogReference(INTERNAL);
+  pinMode(btnPin, INPUT_PULLUP);
+  pinMode(led1Pin, OUTPUT);
+  pinMode(led2Pin, OUTPUT);
+  pinMode(led3Pin, OUTPUT);
+  pinMode(led4Pin, OUTPUT);
+  pinMode(led5Pin, OUTPUT);
+  pinMode(led6Pin, OUTPUT);
+  pinMode(led7Pin, OUTPUT);
+  pinMode(led8Pin, OUTPUT);
+  pinMode(led9Pin, OUTPUT);
+  pinMode(led10Pin, OUTPUT);
+
+  if (initSd()) {
+    myFile.println("Lancement de la prise de mesures avec succès.\n");
+  }
+  Serial.println(F("Done"));
+}
+
+void loop() {
+  float teflon_uv = 1.102;
+  float teflon_rose = 1.179;
+  float teflon_bleu = 1.185;
+  float teflon_vert = 1.091;
+  float teflon_jaune = 1.091;
+  float teflon_orange = 1.041;
+  float teflon_rouge = 1.044;
+  float teflon_ir890 = 1.30;
+  float teflon_ir950 = 1.198;
+  float teflon_blanc = 1.22;
+
+  int allumage = analogRead(A1);
+  int etat;
+  etat = digitalRead(btnPin);
+
+  if (etat == HIGH) {
+    digitalWrite(led1Pin, LOW);
+    digitalWrite(led2Pin, LOW);
+    digitalWrite(led3Pin, LOW);
+    digitalWrite(led4Pin, LOW);
+    digitalWrite(led5Pin, LOW);
+    digitalWrite(led6Pin, LOW);
+    digitalWrite(led7Pin, LOW);
+    digitalWrite(led8Pin, LOW);
+    digitalWrite(led9Pin, LOW);
+    digitalWrite(led10Pin, LOW);
+    Serial.print("Début de la prise des mesures...\n\n");
+
+    digitalWrite(led1Pin, HIGH);
+    myFile.print("Mesures pour la LED UV (390 nm) : \n");
+    delay(3000);
+    int allumage1 = analogRead(A1);
+    float voltage1 = allumage1 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode : ");
+    myFile.print(voltage1);
+    myFile.print(" V\n");
+    int polarisation1 = analogRead(A2);
+    float voltagePol1 = polarisation1 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode après polarisation linéaire (si installation du filtre) : ");
+    myFile.print(voltagePol1);
+    myFile.print(" V\n");
+    myFile.print("Valeur final établie sur la référence du Teflon : ");
+    float normalisation_teflon1 = voltage1 / teflon_uv;
+    myFile.print(normalisation_teflon1);
+    myFile.print(" \n\n");
+    delay(300);
+    digitalWrite(led1Pin, LOW);
+
+    digitalWrite(led2Pin, HIGH);
+    myFile.print("Mesures pour la LED Rose : \n");
+    delay(3000);
+    int allumage2 = analogRead(A1);
+    float voltage2 = allumage2 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode : ");
+    myFile.print(voltage2);
+    myFile.print(" V\n");
+    int polarisation2 = analogRead(A2);
+    float voltagePol2 = polarisation2 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode après polarisation linéaire (si installation du filtre) : ");
+    myFile.print(voltagePol2);
+    myFile.print(" V\n");
+    myFile.print("Valeur final établie sur la référence du Teflon : ");
+    float normalisation_teflon2 = voltage2 / teflon_rose;
+    myFile.print(normalisation_teflon2);
+    myFile.print(" \n\n");
+    delay(300);
+    digitalWrite(led2Pin, LOW);
+
+    digitalWrite(led3Pin, HIGH);
+    myFile.print("Mesures pour la LED Bleue (490 nm) : \n");
+    delay(3000);
+    int allumage3 = analogRead(A1);
+    float voltage3 = allumage3 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode : ");
+    myFile.print(voltage3);
+    myFile.print(" V\n");
+    int polarisation3 = analogRead(A2);
+    float voltagePol3 = polarisation3 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode après polarisation linéaire (si installation du filtre) : ");
+    myFile.print(voltagePol3);
+    myFile.print(" V\n");
+    myFile.print("Valeur final établie sur la référence du Teflon : ");
+    float normalisation_teflon3 = voltage3 / teflon_bleu;
+    myFile.print(normalisation_teflon3);
+    myFile.print(" \n\n");
+    delay(300);
+    digitalWrite(led3Pin, LOW);
+
+    digitalWrite(led4Pin, HIGH);
+    myFile.print("Mesures pour la LED Verte (568 nm) : \n");
+    delay(3000);
+    int allumage4 = analogRead(A1);
+    float voltage4 = allumage4 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode : ");
+    myFile.print(voltage4);
+    myFile.print(" V\n");
+    int polarisation4 = analogRead(A2);
+    float voltagePol4 = polarisation4 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode après polarisation linéaire (si installation du filtre) : ");
+    myFile.print(voltagePol4);
+    myFile.print(" V\n");
+    myFile.print("Valeur final établie sur la référence du Teflon : ");
+    float normalisation_teflon4 = voltage4 / teflon_vert;
+    myFile.print(normalisation_teflon4);
+    myFile.print(" \n\n");
+    delay(300);
+    digitalWrite(led4Pin, LOW);
+
+    digitalWrite(led5Pin, HIGH);
+    myFile.print("Mesures pour la LED Jaune (588nm) : \n");
+    delay(3000);
+    int allumage5 = analogRead(A1);
+    float voltage5 = allumage5 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode : ");
+    myFile.print(voltage5);
+    myFile.print(" V\n");
+    int polarisation5 = analogRead(A2);
+    float voltagePol5 = polarisation1 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode après polarisation linéaire (si installation du filtre) : ");
+    myFile.print(voltagePol5);
+    myFile.print(" V\n");
+    myFile.print("Valeur final établie sur la référence du Teflon : ");
+    float normalisation_teflon5 = voltage5 / teflon_jaune;
+    myFile.print(normalisation_teflon5);
+    myFile.print(" \n\n");
+    delay(300);
+    digitalWrite(led5Pin, LOW);
+
+    digitalWrite(led6Pin, HIGH);
+    myFile.print("Mesures pour la LED Orange (610 nm) : \n");
+    delay(3000);
+    int allumage6 = analogRead(A3);
+    float voltage6 = allumage6 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode : ");
+    myFile.print(voltage6);
+    myFile.print(" V\n");
+    int polarisation6 = analogRead(A2);
+    float voltagePol6 = polarisation6 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode après polarisation linéaire (si installation du filtre) : ");
+    myFile.print(voltagePol6);
+    myFile.print(" V\n");
+    myFile.print("Valeur final établie sur la référence du Teflon : ");
+    float normalisation_teflon6 = voltage6 / teflon_orange;
+    myFile.print(normalisation_teflon6);
+    myFile.print(" \n\n");
+    delay(300);
+    digitalWrite(led6Pin, LOW);
+
+    digitalWrite(led7Pin, HIGH);
+    myFile.print("Mesures pour la LED Rouge (620 nm) : \n");
+    delay(3000);
+    int allumage7 = analogRead(A3);
+    float voltage7 = allumage7 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode : ");
+    myFile.print(voltage7);
+    myFile.print(" V\n");
+    int polarisation7 = analogRead(A2);
+    float voltagePol7 = polarisation7 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode après polarisation linéaire (si installation du filtre) : ");
+    myFile.print(voltagePol7);
+    myFile.print(" V\n");
+    myFile.print("Valeur final établie sur la référence du Teflon : ");
+    float normalisation_teflon7 = voltage7 / teflon_rouge;
+    myFile.print(normalisation_teflon7);
+    myFile.print(" \n\n");
+    delay(300);
+    digitalWrite(led7Pin, LOW);
+
+    digitalWrite(led8Pin, HIGH);
+    myFile.print("Mesures pour la LED IR (890 nm) : \n");
+    delay(3000);
+    int allumage8 = analogRead(A3);
+    float voltage8 = allumage8 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode : ");
+    myFile.print(voltage8);
+    myFile.print(" V\n");
+    int polarisation8 = analogRead(A2);
+    float voltagePol8 = polarisation8 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode après polarisation linéaire (si installation du filtre) : ");
+    myFile.print(voltagePol8);
+    myFile.print(" V\n");
+    myFile.print("Valeur final établie sur la référence du Teflon : ");
+    float normalisation_teflon8 = voltage8 / teflon_ir890;
+    myFile.print(normalisation_teflon8);
+    myFile.print(" \n\n");
+    delay(300);
+    digitalWrite(led8Pin, LOW);
+
+    digitalWrite(led9Pin, HIGH);
+    myFile.print("Mesures pour la LED IR (950 nm) : \n");
+    delay(3000);
+    int allumage9 = analogRead(A3);
+    float voltage9 = allumage9 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode : ");
+    myFile.print(voltage9);
+    myFile.print(" V\n");
+    int polarisation9 = analogRead(A2);
+    float voltagePol9 = polarisation9 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode après polarisation linéaire (si installation du filtre) : ");
+    myFile.print(voltagePol9);
+    myFile.print(" V\n");
+    myFile.print("Valeur final établie sur la référence du Teflon : ");
+    float normalisation_teflon9 = voltage9 / teflon_ir950;
+    myFile.print(normalisation_teflon9);
+    myFile.print(" \n\n");
+    delay(300);
+    digitalWrite(led9Pin, LOW);
+
+    digitalWrite(led10Pin, HIGH);
+    myFile.print("Mesures pour la LED Blanche : \n");
+    delay(3000);
+    int allumage10 = analogRead(A3);
+    float voltage10 = allumage10 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode : ");
+    myFile.print(voltage10);
+    myFile.print(" V\n");
+    int polarisation10 = analogRead(A2);
+    float voltagePol10 = polarisation10 * (5.0 / 1023.0);
+    myFile.print("Tension mesurée par la photodiode après polarisation linéaire (si installation du filtre) : ");
+    myFile.print(voltagePol10);
+    myFile.print(" V\n");
+    myFile.print("Valeur final établie sur la référence du Teflon : ");
+    float normalisation_teflon10 = voltage10 / teflon_blanc;
+    myFile.print(normalisation_teflon10);
+    myFile.print(" \n\n");
+    delay(300);
+    digitalWrite(led10Pin, LOW);
+
+    float ndvi = (voltagePol8 - voltagePol7) / (voltagePol8 + voltagePol7);
+    myFile.print("Valeur de l'indice de végétation par différence normalisée (NDVI) : ");
+    myFile.print(ndvi);
+
+    float WI = voltagePol8 / voltagePol9;
+    float WC = (684 * WI) - 620;
+    myFile.print("\nEstimation de la teneur en eau : ");
+    myFile.print(WC);
+    myFile.print(" %\n");
+
+    double formule =  (voltagePol8 / (voltagePol4 * voltagePol7) );
+    double expo = 1.254;
+    double chlorophyll_a_b = pow(formule, expo);
+    myFile.print("Estimation de la chlorophyle  : ");
+
+    myFile.print(0.0012 * chlorophyll_a_b * 1000);
+    myFile.print(" μg/cm²\n");
+
+    myFile.print("\nFin de la prise des mesures.");
+    myFile.close();
+  }
+
+  else {
+    digitalWrite(led1Pin, LOW);
+    digitalWrite(led2Pin, LOW);
+    digitalWrite(led3Pin, LOW);
+    digitalWrite(led4Pin, LOW);
+    digitalWrite(led5Pin, LOW);
+    digitalWrite(led6Pin, LOW);
+    digitalWrite(led7Pin, LOW);
+    digitalWrite(led8Pin, LOW);
+    digitalWrite(led9Pin, LOW);
+    digitalWrite(led10Pin, LOW);
+  }
+}
+
+bool initSd() {
+  Serial.print("Initializing SD card...");
+  pinMode(10, OUTPUT);
+  pinMode(9, OUTPUT);
+
+  if (!SD.begin(10)) {
+    Serial.println(F("initialization failed!"));
+    return false;
+  }
+  Serial.println(F("initialization done."));
+  myFile = SD.open("imaging.txt", FILE_WRITE);
+
+  if (myFile) {
+    Serial.println(F("successfully opened imaging.txt"));
+    return true;
+  }
+  else {
+    Serial.println(F("error opening imaging.txt"));
+    return false;
+  }
+}
+
